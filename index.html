@@ -1,60 +1,95 @@
-
 <!DOCTYPE html>
 
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css" media="screen,projection"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SmartFloor UI</title>  
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   </head>
+
   <body onload="floor.setup()">
-    <div class="container" id="container">
-      <div class="card-panel green lighten-5">
-      <div class="row">
-        <div class="input-field col s3">
-          <input value="broker.hivemq.com" id="server" type="text" class="validate">
-          <label class="active" for="server">Server</label>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="text-center">SmartFloor UI <small>Version 0.1</small></h1>
+      </div>
+
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          <h3 class="panel-title">Remote Server Configuration</h3>
         </div>
-        <div class="input-field col s1">
-          <input value="8000" id="port" type="text" class="validate">
-          <label class="active" for="port">Port</label>
+        <div class="panel-body">
+          <div class="row">
+            <div class="col-md-4">
+              <label for="broker-url">MQTT Server</label>
+              <div class="input-group input-group">
+                <span class="input-group-addon" id="server-addon"><i class="fa fa-cloud" aria-hidden="true"></i> ws://</span>
+                <input type="url" class="form-control" id="broker-url" aria-describedby="server-addon" value="broker.hivemq.com">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label for="broker-port">Port</label>
+              <div class="input-group">
+                <span class="input-group-addon" id="port-addon">:</span>
+                <input type="text" class="form-control" id="broker-port" aria-describedby="port-addon" value="8000">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label for="broker-path">Path</label>
+              <div class="input-group">
+                <span class="input-group-addon" id="path-addon">/</span>
+                <input type="text" class="form-control" id="broker-path" aria-describedby="path-addon" value="mqtt">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label for="broker-client">Client</label>
+              <div class="input-group">
+                <span class="input-group-addon" id="client-addon"><i class="fa fa-user-circle" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="broker-client" aria-describedby="client-addon" value="1D6CFB4E">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label for="broker-topic">Topic</label>
+              <div class="input-group">
+                <span class="input-group-addon" id="topic-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
+                <input type="text" class="form-control" id="broker-topic" aria-describedby="topic-addon" value="step">
+              </div>
+            </div>
+          </div>
+    
         </div>
-        <div class="input-field col s2">
-          <input value="/mqtt" id="path" type="text" class="validate">
-          <label class="active" for="path">Path</label>
+
+        <div class="panel-footer">
+          <button type="button" class="btn btn-primary" onclick="websocketclient.connect()"> Connect </button>
+          <button type="button" class="btn btn-primary" onclick="websocketclient.subscribe(document.getElementById('broker-topic').value)"> Subscribe </button>
+        </div>  
+      </div>
+
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h3 class="panel-title">Server Data Flow</h3>
         </div>
-        <div class="input-field col s3">
-          <input value="x001x" id="clientID" type="text" class="validate">
-          <label class="active" for="clientID">Client ID</label>
-        </div>
-        <div class="input-field col s3">
-          <input value="step" id="topic" type="text" class="validate">
-          <label class="active" for="topic">Topic</label>
+        <div class="panel-body">
+          <p id="debug-info">Web UI initialized, ready to connect</p>
         </div>
       </div>
 
-      <div class="row">
-        <div class="col s2">
-          <a class="waves-effect waves-light btn" onclick="websocketclient.connect()">Connect</a>
+      <div class="panel panel-success">
+        <div class="panel-heading">
+          <h3 class="panel-title">Real-time Event</h3>
         </div>
-        <div class="col s3">
-          <a class="waves-effect wave-light btn" onclick="websocketclient.subscribe(document.getElementById('topic').value)">Subscribe</button></a>
-        </div>
-        <div class="input-field col s7">
-        <div class="card-panel">
-          <span id="info" class="green-text">Server not connected</span>
-        </div>
+        <div class="panel-body">
+          <canvas id="floor" width="300" height="300" style="width: 100%"></canvas>
         </div>
       </div>
-      </div>
-      <div class="card-panel grey lighten-4">
-      <div class="row">
-        <div class="col s12">
-            <canvas id="floor" width="300" height="300" style="width: 100%"></canvas>
-      </div>
-      </div>
+
     </div>
+    <!--<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.2/mqttws31.min.js"></script>
+    <script src="https://use.fontawesome.com/dfa80f0712.js"></script>
     <script src="js/app.js"></script>
     <script src="js/layout.js"></script>
   </body>
+
 </html>
