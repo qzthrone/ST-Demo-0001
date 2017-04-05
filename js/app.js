@@ -3,10 +3,10 @@ var websocketclient = {
 	"connected": false,
 
 	"connect" : function () {
-		var server = document.getElementById("server").value;
-		var port = document.getElementById("port").value;
-		var path = document.getElementById("path").value;
-		var clientID = document.getElementById("clientID").value;
+		var server = document.getElementById("broker-url").value;
+		var port = document.getElementById("broker-port").value;
+		var path = "/"+document.getElementById("broker-path").value;
+		var clientID = document.getElementById("broker-client").value;
 		this.client = new Paho.MQTT.Client(server, Number(port), path, clientID);
 		this.client.onMessageArrived = this.onMessageArrived;
 
@@ -17,23 +17,23 @@ var websocketclient = {
 		};
 
 		this.client.connect(options);
-		document.getElementById("info").innerText = "Server connecting...";
+		document.getElementById("debug-info").innerText = "Server connecting...";
 
 	},
 
 	"onConnect": function () {
 		websocketclient.connected = true;
-		document.getElementById("info").innerText = "Server connected";
+		document.getElementById("debug-info").innerText = "Server connected";
 		console.log("server connected");
 	},
 
 	"onFail": function (message) {
 		websocketclient.connected = false;
-		document.getElementById("info").innerText = "Connection Error: "+message.errorMessage;
+		document.getElementById("debug-info").innerText = "Connection Error: "+message.errorMessage;
 	},
 
 	"onSubscribe": function () {
-		document.getElementById("info").innerText = "Subscribed to "+document.getElementById("topic").value;
+		document.getElementById("debug-info").innerText = "Subscribed to "+document.getElementById("broker-topic").value;
 	},
 
 	"onMessageArrived": function (message) {
@@ -46,11 +46,11 @@ var websocketclient = {
 		var pinPoint = floor.sensorIDtoLocation(sensorID);
 		switch(eventID) {
 			case 1:
-				document.getElementById("info").innerText = "Step In: "+pinPoint;
+				document.getElementById("debug-info").innerText = "Step In: "+pinPoint;
 				floor.mark(pinPoint);
 				break;
 			case 2:
-				document.getElementById("info").innerText = "Step Out: "+pinPoint;
+				document.getElementById("debug-info").innerText = "Step Out: "+pinPoint;
 				floor.unmark(pinPoint);
 				break;
 		}
