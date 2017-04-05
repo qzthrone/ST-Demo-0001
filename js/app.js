@@ -16,6 +16,7 @@ var websocketclient = {
 			onFailure: this.onFail
 		};
 
+		document.getElementById("debug-info").innerText = "About to connect: "+server;
 		this.client.connect(options);
 		document.getElementById("debug-info").innerText = "Server connecting...";
 
